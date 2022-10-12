@@ -1,6 +1,7 @@
 # SysAnalysisLabs
 Python scrips that were made during system analysis course
-Скрипты написанные во время изучения курса по системному анализу
+
+#Скрипты написанные во время изучения курса по системному анализу
 
 simplex.py is a Python script that solves linear programming tasks with simplex method.
   It has an output into simplex.txt file to research parameters at every step. 
