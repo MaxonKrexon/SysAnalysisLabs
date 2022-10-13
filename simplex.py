@@ -102,4 +102,4 @@ while(flag):
 file.close() # <- Закрытие файла для сохранения в нём данных
 
 # Команда в ОС на открытие текстового документа для просмотра полученных данных
-os.system('notepad.exe C:\\Users\\cortal\\Documents\\Python\\SysAnalysis\\simplex.txt')
+os.system('notepad simplex.txt')
