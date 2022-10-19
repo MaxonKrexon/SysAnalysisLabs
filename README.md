@@ -10,6 +10,8 @@ Scripts computes whole graph and search for a path. As it was found, script gene
 
 gradientMethod.py - script for finding a local minimum of a defferentiable function using gradient descent. 
 As input script gets: the function under study and derivatives with respect to its arguments, initial point and axis boundaries.
+Then it follows these steps:
+
 1) Script visualize function in given boundaries. 
 2) It computes gradient of function at initial point.
 3) Computes new point - a point after offset with given step and gradient value.
