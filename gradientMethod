@@ -1,0 +1,75 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+
+def func(x, y):
+    # g = np.exp(x**2 + x) + np.exp(y**2 + y)
+    g = x ** 2 + y ** 2 + (x ** 2 - y ** 2 + 1) ** 2
+    return g
+
+
+X,Y = np.meshgrid(x, y)
+
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z');
+ax.plot_surface(X, Y, func(X,Y), rstride=1, cstride=1, cmap='viridis', edgecolor='black')
+
+plt.show()
+
+def gradfunc(x, y):  # <- частные производные рассматриваемой функции
+    x2 = 2 * x * (2 * x ** 2 - 2 * y ** 2 + 3) # <- производная по первому аргументу
+    y2 = -2 * y * (-2 * x ** 2 + 2 * y ** 2 - 1) # <- производная по второму аргументу
+    return [x2, y2]
+
+
+p = [[0, -0.2]] # <- Начальная точка для градиентного метода
+
+
+def gradMethod():
+    file = open("gradient.txt", 'w', encoding="UTF-8")
+    file.write("\tМетод градиента с переменным шагом\n")  # Оформление вывода в файл
+    file.write("Шаг\tp(x y)\t\tp+1(x y)\t\tF(p)\tF(p+1)\tgrad(p)\t\t\te\t\tLambda\n")  # Оформление вывода в файл
+
+    flag = True
+    index = 0
+    x = 0
+    y = 1
+    step = 0.5
+    while (flag):
+        # Проверяем градиент функции в начальной точке
+        res = gradfunc(p[index][x], p[index][y])
+        # Вычисляем смещение точки относительно начала
+        pNew = [p[index][x] + step * res[x], p[index][y] + step * res[y]]
+
+        check = True
+        while (check):
+            if func(pNew[x], pNew[y]) < func(p[index][x], p[index][y]):
+                check = False
+            else:
+                step /= 2
+                pNew = [p[index][x] + step * res[x], p[index][y] + step * res[y]]
+
+        p.append(pNew)
+
+        index += 1
+        resPrev = gradfunc(p[index - 1][x], p[index - 1][y])
+        resNow = gradfunc(p[index][x], p[index][y])
+        error = [abs(p[index][x] - p[index - 1][x]), abs(p[index][y] - p[index - 1][y])]
+
+        file.write(f"{index}\t{format(p[index - 1][0], '.4f')} {format(p[index - 1][1], '.4f')}\t{format(p[index][0], '.4f')} {format(p[index][1], '.4f')}\t{format(func(p[index - 1][x], p[index - 1][y]), '.4f')}")
+        file.write(f"\t{format(func(p[index][x], p[index][y]), '.4f')}\t{format(resPrev[0], '.4f')} {format(resPrev[1], '.4f')}\t")
+        file.write(f"\t{format(error[0], '.4f')} {format(error[1], '.4f')}\t{step}\n")
+
+        if abs(p[index][x] - p[index - 1][x]) < 0.01 and abs(p[index][y] - p[index - 1][y]) < 0.01:
+            flag = False
+            print(func(p[index][x], p[index][y]))
+            print(p[index])
+
+    file.close()
+    os.system('notepad gradient.txt')
+
+gradMethod()
