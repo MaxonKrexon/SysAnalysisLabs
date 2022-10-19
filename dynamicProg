@@ -1,0 +1,108 @@
+import numpy as np
+
+# import datetime
+# now = datetime.now()
+# file = open(f"backsweepMethod_{now.day}-{now.month}-{now.year}_{now.hour}-{now.minute}-{now.second}.html", 'w', encoding="UTF-8")
+file = open("backsweepMethod.html", 'w', encoding="UTF-8")
+file.write("<html>\n<title>Метод обратной прогонки</title>\n<body>\n<table>\n")
+
+
+def main(R, C):
+    n = np.size(R, 1)
+    m = np.size(C, 1)
+    Q = [[0] * m for i in range(n)]
+    print("Размер итоговой матрицы =", np.size(Q, 0), np.size(Q, 1))
+
+    for j in range(1, np.size(R, 0) + 1):
+        Q[0][j] = R[0][j - 1] + Q[0][j - 1]
+
+    for i in range(1, np.size(C, 0) + 1):
+        Q[i][0] = C[i - 1][0] + Q[i - 1][0]
+
+    I = np.size(Q, 0)  # Количество строк
+    J = np.size(Q, 1)  # Количество столбцов
+    K = I + J - 2  # Количество шагов
+
+    for k in range(1, K):
+        for i in range(1, I):
+            for j in range(1, J):
+                Q[i][j] = min((R[i][j - 1] + Q[i][j - 1], C[i - 1][j] + Q[i - 1][j]))
+
+    for i in range(0, np.size(Q, 0)):
+        print(Q[i][:])
+
+    Mk = []
+    Mk.append(Q[-1][-1])
+
+    ni = np.size(Q, 0) - 1
+    nj = np.size(Q, 1) - 1
+    niM = []
+    njM = []
+    nn = 0
+
+    while ni > nn and nj > nn:
+        if Q[ni - 1][nj] < Q[ni][nj - 1]:
+            Mk.append(Q[ni - 1][nj])
+            ni = ni - 1
+            nj = nj
+            niM.append(ni)
+            njM.append(nj)
+        elif Q[ni][nj - 1] < Q[ni - 1][nj]:
+            Mk.append(Q[ni][nj - 1])
+            ni = ni
+            nj = nj - 1
+            niM.append(ni)
+            njM.append(nj)
+        elif Q[ni][nj - 1] == Q[ni - 1][nj]:
+            Mk.append(Q[ni][nj - 1])
+            ni = ni
+            nj = nj - 1
+            niM.append(ni)
+            njM.append(nj)
+
+    Mk.append(Q[0][0])
+    print('\n', Mk)
+    print('\n')
+
+    for i in range(0, np.size(niM, 0)):
+        Q[niM[i]][njM[i]] = f"<td bgcolor = FFFF00>{Q[niM[i]][njM[i]]}</td>"
+
+    Q[0][0] = f"<td bgcolor = FFFF00>{Q[0][0]}</td>"
+    Q[-1][-1] = f"<td bgcolor = FFFF00>{Q[-1][-1]}</td>"
+
+    for i in range(0, np.size(Q, 0)):
+        file.write("<tr>\n")
+        for j in range(np.size(Q, 1)):
+            if str(Q[i][j]).__contains__("<td"):
+                file.write(str(Q[i][j]))
+            else:
+                file.write(f"<td>{Q[i][j]}</td>")
+
+        file.write("</tr>\n")
+
+    file.write("\n</body>\n</html>")
+    file.close()
+
+
+R = np.array([[33, 12, 15, 56, 92, 74, 91, 22, 32, 65],
+              [79, 49, 52, 38, 45, 64, 22, 85, 23, 64],
+              [69, 95, 30, 49, 67, 46, 61, 39, 67, 55],
+              [27, 41, 85, 40, 29, 92, 29, 3, 61, 82],
+              [23, 72, 62, 15, 64, 97, 34, 85, 82, 83],
+              [72, 32, 60, 55, 17, 62, 37, 29, 49, 66],
+              [7, 23, 92, 4, 60, 94, 32, 64, 65, 85],
+              [4, 60, 43, 35, 39, 5, 78, 36, 65, 62],
+              [44, 58, 67, 22, 53, 40, 75, 68, 45, 17],
+              [98, 14, 16, 30, 84, 23, 26, 29, 70, 90]])
+
+C = np.array([[66, 12, 48, 82, 96, 3, 31, 80, 98, 32, 3],
+              [11, 72, 21, 47, 75, 58, 8, 64, 4, 87, 62],
+              [76, 4, 1, 62, 93, 60, 42, 59, 38, 60, 59],
+              [65, 84, 44, 44, 8, 21, 47, 60, 10, 94, 60],
+              [17, 18, 34, 31, 33, 64, 29, 20, 14, 61, 71],
+              [90, 15, 2, 67, 69, 86, 15, 66, 57, 39, 78],
+              [16, 56, 77, 83, 19, 65, 55, 16, 47, 21, 38],
+              [53, 32, 75, 60, 28, 82, 8, 56, 60, 11, 62],
+              [87, 86, 2, 59, 27, 91, 21, 21, 57, 67, 78]])
+
+main(R, C)
